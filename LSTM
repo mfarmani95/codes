@@ -1,0 +1,216 @@
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.model_selection import (KFold,
+                                     GridSearchCV,
+                                     RandomizedSearchCV,
+                                     cross_validate,
+                                     
+                                     train_test_split)
+from sklearn import metrics
+from sklearn import preprocessing
+import itertools
+import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import confusion_matrix
+from keras import metrics
+from keras.utils.np_utils import to_categorical
+from keras.models import Sequential,load_model
+from keras.layers import Dense,LSTM,Dropout,GRU,BatchNormalization
+from keras.optimizers import adam_v2
+from keras.callbacks import ReduceLROnPlateau
+import keras
+import skopt
+from skopt import gp_minimize
+from skopt.space import Integer,Real,Categorical
+from skopt.plots import plot_convergence
+from skopt.plots import plot_objective ,plot_evaluations
+from skopt.utils import use_named_args
+from sklearn.preprocessing import MinMaxScaler
+import tensorflow as tf
+import pandas as pd
+import numpy as np
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import train_test_split
+from sklearn import metrics
+data=pd.read_csv("..................")
+y=pd.DataFrame(data['observational'])
+x=df.drop(columns='rain')
+
+## feature selection_ boruta random forest feature selection method
+model = RandomForestRegressor()
+feat_selector = BorutaPy(model, n_estimators='auto', verbose=2)
+feat_selector.fit(x, y)
+boruta_ranking=pd.DataFrame({"featre":x.columns,"Ranking":list(feat_selector.ranking_)})
+trans=feat_selector.transform(X)
+
+## feature selection RFE 
+from sklearn.feature_selection import RFE
+from sklearn.linear_model import LinearRegression
+reg=LinearRegression()
+rfe_selector=RFE(reg,?) ## the ? determines number of features that we want to select
+rfe_selector.fit(X_aray, Y)
+
+md=pd.DataFrame({"features":x.columns, "Ranking":list(rfe_selector.ranking_)})
+md.plot.bar()
+plot.show
+
+## feature selection LASSO
+from sklearn.linear_model import Lasso
+lasso=Lasso()
+lasso.fit(x,y)
+lasso.coef_
+## LSTM main
+day=? ## The number of lag-days. Some articles use lag-days for better prediction.
+vorodi=np.array(##selected features)
+main_input=list()
+for i in range(day,len(vorodi)):
+main_input.append(vorodi[i-day:i])
+y=np.array(y)
+y_input=y[day:]
+X_train, X_test, y_train, y_test = train_test_split(main_input, y_input, test_size=0.3)
+def lstm( learning_rate, num_LSTM_nodes, num_LSTM_nodes1, num_LSTM_nodes2,
+num_LSTM_nodes3, Drop_out, Drop_out1, Drop_out2, Drop_out3):
+# prepare model
+model = Sequential()
+model.add(LSTM(num_LSTM_nodes,
+input_shape=(X_train.shape[1:]),
+return_sequences=True,
+))
+model.add(Dropout(Drop_out)) ## Some articles use dropout; some do not. It depends on how to
+tune the model’s hyperparameters.
+model.add(LSTM(num_LSTM_nodes1,
+return_sequences=True,
+))
+model.add(Dropout(Drop_out1))
+model.add(LSTM(num_LSTM_nodes2,
+return_sequences=True,
+))
+model.add(Dropout(Drop_out2))
+model.add(LSTM(num_LSTM_nodes3, return_sequences=False))
+model.add(Dropout(Drop_out3))
+model.add(BatchNormalization())
+model.add(Dense(1,
+activation='relu' ## Because of the mathematic of the RELU function, this dense layer
+help to create values higher than targets(observed values).
+))
+optimizer=tf.keras.optimizers.Adam(lr=learning_rate)
+model.compile( loss='mse', optimizer= optimizer,
+metrics=['accuracy'], ##or metrics=[[tf.keras.metrics.RootMeanSquaredError()]]
+)
+return model
+
+## Hyperparameters’ space
+dim_learning_rate= Real(
+low=1e-6 , high=1e-1, prior='log-uniform',name='learning_rate')
+dim_num_LSTM_nodes=Integer(
+low=30, high= 70 , name='num_LSTM_nodes')
+dim_num_LSTM_nodes1=Integer(
+low=30, high= 70 , name='num_LSTM_nodes1')
+dim_num_LSTM_nodes2=Integer(
+low=30, high= 70 , name='num_LSTM_nodes2')
+dim_num_LSTM_nodes3=Integer(
+low=30, high= 70 , name='num_LSTM_nodes3')
+dim_batch_size=Integer(
+low=100, high=2500, name='batch_size' )
+dim_drop_out= Real(
+low=1e-2 , high=5e-1, prior='uniform' ,name='drop_out')
+dim_drop_out1= Real(
+low=1e-2 , high=5e-1, prior='uniform',name='drop_out1')
+dim_drop_out2= Real(
+low=1e-2 , high=5e-1, prior='uniform',name='drop_out2')
+dim_drop_out3= Real(
+low=1e-2 , high=5e-1, prior='uniform',name='drop_out3')
+param_grid=[ dim_learning_rate,
+dim_num_LSTM_nodes,
+dim_num_LSTM_nodes1,
+dim_num_LSTM_nodes2,
+dim_num_LSTM_nodes3,
+dim_batch_size,
+dim_drop_out,
+dim_drop_out1,
+dim_drop_out2,
+dim_drop_out3,
+]
+
+## optimization
+## amalan kare optimize ro in function anjam mide
+@use_named_args(param_grid)
+def objectivy(learning_rate,
+   # num_dense_layers,
+  #  num_dense_nodes,
+   # activation,
+    num_LSTM_nodes
+    ):
+    ##print hyperparameter
+    ## inja maloom mikone kodom hyperparameter ro darim optimize mikonim
+    print('learning_rate:{0:1e}'.format(learning_rate))
+  #  print('num_dense_layers:',num_dense_layers)
+  #  print('num_dense_nodes:',num_dense_nodes)
+   # print('activation:',activation)
+    print('num_LSTM_neural:', num_LSTM_nodes )
+    print()
+    ## hala inja tak take hyper parametrha ro midim be un modle k balatar sakhtim
+    ## hamon CNN, k mitone har modele dg ham bashe , masaln baraye kare khodam 
+    ## mitonm jaye CNN az LSTM ya GRU estefade konm
+    model=lstm(learning_rate= learning_rate,
+                  #   num_dense_layers= num_dense_layers,
+                    # num_dense_nodes= num_dense_nodes,
+                   #  activation= activation,
+                     num_LSTM_nodes=num_LSTM_nodes
+                     )
+    ## hala mikhaym learning rate ro optimize konim
+    ## in function age learning rate be ezaye tedade moshakhasi epochs,patience, taqir nkone
+    ## khodesh miad learning rate ro kahesh mide (taqiri toye learning rate Ejad mikone)
+    learning_rate_reduction=ReduceLROnPlateau(monitor='val_loss', ## in mishe chizi k mikhaym meyaresh bashe
+                                                 patience=2, ## tedade epochs
+                                                 verbose=1,
+                                                 factor=0.5, ## meqdari k mikhaym learning rate kahesh peyda kone
+                                                 min_lr=0.000001 ## minimum meqdare learning rate    
+                                                 )
+    ## hala model ro fit mikoni
+    history=model.fit(x=X_train,
+                      y=y_train,
+                      epochs=4000, 
+                      batch_size=2500, ## khode in mishe hyper parameter bashe
+                      validation_split=0.2,## in yani 0.1 or 10% dadehaye x_train baraye validation kenar gozashte mishe
+                      #callbacks=learning_rate_reduction ## inja ham mishe age nueralk network chizi yad ngreft(lr taqir nkrd) khodemon taqir bdimesh
+                      )
+    
+    accuracy=history.history['val_loss'][-1]
+   # natayej.append(accuracy)
+   # natayej.append(learning_rate)
+   # natayej.append(num_LSTM_nodes)
+   # print()
+   # print("Accuracy : {0:2%}".format(accuracy))
+   # print()
+    ## kari k inja mikonim ine
+    ## ma ye best_accuracy qabl az neveshtane in function objectivy taien kardim
+    ## ba global mishe az function kharej shod, pas inja migim best_accuracy ro boro bbin chande,0,
+    ## hala bia ba accuracy model chek kon age behtar bod model ro save kon, toye mahali k behesh goftim 
+    ## yani path_best_model badesham model ro pak kon k ja ziad ngire
+    global best_accuracy
+    if accuracy < best_accuracy:
+      model.save(spath_best_model)
+      best_accuracy=accuracy
+    del model 
+    ## inja manfi accuracy ro migim bargardone chon gp_minimize 
+    ## minimum mikone
+    return accuracy
+default_parameters=[.....,...,....,....]
+
+gp=gp_minimize(
+    objectivy,
+    param_grid,
+    x0=default_parameters,
+    acq_func=?,  ## this function should be selected based on the data 
+    n_calls=100,
+    
+    
+)
+
+
+
+
+
+
